@@ -1,4 +1,5 @@
 "use client";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,24 +8,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { useRouter } from "next/navigation";
-import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
-import NavItems from "./NavItems";
+import NavItems from "@/components/NavItems";
+import { signOut } from "@/lib/actions/auth.actions";
 
-const UserDropdown = () => {
+const UserDropdown = ({ user }: { user: User }) => {
   const router = useRouter();
-  const handleSignout: () => Promise<void> = async () => {
-    // Perform sign-out logic here (e.g., clear tokens, call API)
-    // After sign-out, redirect to the homepage
-    await router.push("/sign-in");
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/sign-in");
   };
-  const user = {
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -48,13 +46,13 @@ const UserDropdown = () => {
       <DropdownMenuContent className="text-gray-400">
         <DropdownMenuLabel>
           <div className="flex relative items-center gap-3 py-2">
-            <Avatar className="h-8 w-8">
+            <Avatar className="h-10 w-10">
               <AvatarImage src="https://avatars.githubusercontent.com/u/153423955?s=280&v=4" />
               <AvatarFallback className="bg-yellow-500 text-yellow-900 text-sm font-bold">
                 {user.name[0]}
               </AvatarFallback>
             </Avatar>
-            <div className="flex flex-col ">
+            <div className="flex flex-col">
               <span className="text-base font-medium text-gray-400">
                 {user.name}
               </span>
@@ -64,12 +62,13 @@ const UserDropdown = () => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-gray-600" />
         <DropdownMenuItem
+          onClick={handleSignOut}
           className="text-gray-100 text-md font-medium focus:bg-transparent focus:text-yellow-500 transition-colors cursor-pointer"
-          onClick={handleSignout}
         >
-          <LogOut className="mr-2 h-4 w-4 hidden sm:block" /> Logout
+          <LogOut className="h-4 w-4 mr-2 hidden sm:block" />
+          Logout
         </DropdownMenuItem>
-        <DropdownMenuSeparator className="bg-gray-600 hidden sm:block" />
+        <DropdownMenuSeparator className="hidden sm:block bg-gray-600" />
         <nav className="sm:hidden">
           <NavItems />
         </nav>
@@ -77,5 +76,4 @@ const UserDropdown = () => {
     </DropdownMenu>
   );
 };
-
 export default UserDropdown;

@@ -3,6 +3,8 @@
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import InputField from "@/components/forms/InputField";
+import { signInWithEmail } from "@/lib/actions/auth.actions";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Footerlink from "@/components/forms/Footerlink";
 
@@ -68,7 +70,7 @@ const SignIn = () => {
         </Button>
 
         <Footerlink
-          text="Don't have an account? "
+          text="Don't have an account?"
           linkText="Create an account"
           href="/sign-up"
         />
