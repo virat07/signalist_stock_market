@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test:db": "node scripts/test-db.ts"
+    "test:db": "node scripts/test-db.ts",
+    "inngest": "npx inngest-cli@latest dev"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.11",
