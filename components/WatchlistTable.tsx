@@ -13,6 +13,7 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { cn, getChangeColorClass } from "@/lib/utils";
 import WatchlistButton from "./WatchlistButton";
+import AddAlertNotification from "./AddAlertNotification";
 
 export function WatchlistTable({ watchlist }: WatchlistTableProps) {
   const router = useRouter();
@@ -31,14 +32,24 @@ export function WatchlistTable({ watchlist }: WatchlistTableProps) {
         </TableHeader>
         <TableBody>
           {watchlist.map((item, index) => (
-            <TableRow
-              key={item.symbol + index}
-              className="table-row"
-              onClick={() =>
-                router.push(`/stocks/${encodeURIComponent(item.symbol)}`)
-              }
-            >
-              <TableCell className="pl-4 table-cell">{item.company}</TableCell>
+            <TableRow key={item.symbol + index} className="table-row">
+              <TableCell>
+                <WatchlistButton
+                  symbol={item.symbol}
+                  company={item.company}
+                  isInWatchlist={true}
+                  showTrashIcon={true}
+                  type="icon"
+                />
+              </TableCell>
+              <TableCell
+                className="pl-4 table-cell"
+                onClick={() =>
+                  router.push(`/stocks/${encodeURIComponent(item.symbol)}`)
+                }
+              >
+                {item.company}
+              </TableCell>
               <TableCell className="table-cell">{item.symbol}</TableCell>
               <TableCell className="table-cell">
                 {item.priceFormatted || "—"}
@@ -58,17 +69,9 @@ export function WatchlistTable({ watchlist }: WatchlistTableProps) {
                 {item.peRatio || "—"}
               </TableCell>
               <TableCell>
-                <Button className="add-alert">Add Alert</Button>
+                <AddAlertNotification selectedStock={item} />
               </TableCell>
-              <TableCell>
-                <WatchlistButton
-                  symbol={item.symbol}
-                  company={item.company}
-                  isInWatchlist={true}
-                  showTrashIcon={true}
-                  type="icon"
-                />
-              </TableCell>
+
             </TableRow>
           ))}
         </TableBody>

@@ -119,6 +119,7 @@ declare global {
     type ProfileData = {
         name?: string;
         marketCapitalization?: number;
+        logo?: string;
     };
 
     type FinancialsData = {
