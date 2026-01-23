@@ -1,18 +1,30 @@
 # Stock Marketplace
 
-A comprehensive stock market dashboard application built with Next.js 16, offering real-time market data, interactive charts, and personalized watchlist management.
+A comprehensive, AI-powered stock market dashboard application built with Next.js 16. The application offers real-time market data, interactive charts, personalized watchlist management, and intelligent background services for news and notifications.
 
 ## 🚀 Features
 
-- **Real-Time Market Dashboard**: Visualize market trends with interactive TradingView widgets.
-  - **Market Overview**: Snapshot of global market performance.
-  - **Stock Heatmap**: Visual representation of stock performance across sectors.
-  - **Top Stories**: Real-time news timeline.
-  - **Market Quotes**: Live quotes for major indices and stocks.
-- **Secure Authentication**: Robust sign-up and sign-in functionality powered by `better-auth`.
+### 📊 Real-Time Market Dashboard
+- **Market Overview**: Instant snapshot of global market performance.
+- **Stock Heatmap**: Visual representation of stock performance across sectors.
+- **Top Stories**: Real-time news timeline to stay updated with global events.
+- **Market Quotes**: Live quotes for major indices and stocks.
+
+### 🤖 AI-Powered Intelligence
+- **Smart News Summaries**: Receive daily, personalized news summaries relevant to your watchlist, powered by **Google Gemini**.
+- **Personalized Onboarding**: AI-generated welcome emails tailored to your investment goals and risk tolerance.
+
+### 🔔 Notifications & Alerts
+- **Price Alerts (Beta)**: Set custom price thresholds for specific stocks to get notified when targets are met.
+- **Email Notifications**: Integration with **Nodemailer** for reliable delivery of reliable updates and news.
+
+### 👤 User Experience
+- **Secure Authentication**: Robust sign-up and sign-in functionality powered by **Better Auth**.
 - **Personalized Watchlist**: Add and manage your favorite stocks to track their performance.
 - **Stock Search**: Efficient search functionality to find stocks by symbol or company name.
-- **Detailed Stock Analysis**: Dedicated pages for individual stock data (under development).
+- **Responsive Design**: Fully responsive UI built with **Tailwind CSS v4** and **Radix UI components**.
+
+---
 
 ## 🛠️ Tech Stack
 
@@ -20,46 +32,70 @@ A comprehensive stock market dashboard application built with Next.js 16, offeri
 - **Database**: [MongoDB](https://www.mongodb.com/) with Mongoose
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) & [Radix UI](https://www.radix-ui.com/)
 - **Authentication**: [Better Auth](https://www.better-auth.com/)
+- **AI & ML**: [Google Gemini](https://deepmind.google/technologies/gemini/) (Generative AI)
+- **Background Jobs**: [Inngest](https://www.inngest.com/) (Serverless Queues & Cron Jobs)
+- **Market Data**: [Finnhub API](https://finnhub.io/)
+- **Communication**: [Nodemailer](https://nodemailer.com/)
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **Widgets**: [TradingView Widgets](https://www.tradingview.com/widget/)
 
-## 🔄 Project Flow
+---
 
-The following diagram illustrates the primary user flow within the specific features of the application:
+## 🔄 Project Architecture
+
+### Data & User Flow
+The following diagram illustrates the primary user flows for the Dashboard and Watchlist, as well as the Background AI Jobs:
 
 ```mermaid
 sequenceDiagram
     actor User
     participant Auth as Auth System
     participant Dash as Dashboard
-    participant Search as Search Component
     participant DB as MongoDB
+    participant Inngest as Inngest (Jobs)
+    participant AI as Gemini AI
+    participant Email as Email Service
 
     User->>Auth: Sign Up / Sign In
     Auth-->>User: Session Token
-    User->>Dash: Access Dashboard
-    Dash->>User: Display Market Overview, Heatmap, News
     
     rect rgb(30, 30, 30)
-        note right of User: Watchlist Feature
-        User->>Search: Search for Stock (e.g., AAPL)
-        Search-->>User: Show Results
-        User->>Dash: Click "Add to Watchlist"
+        note right of User: Dashboard Actions
+        User->>Dash: Access Dashboard
+        Dash->>User: Display Overview, Heatmap, News
+        User->>Dash: Add Stock to Watchlist
         Dash->>DB: Save Watchlist Item via Server Action
-        DB-->>Dash: Confirmation
+    end
+
+    rect rgb(0, 50, 50)
+        note right of User: Background Automation
+        Inngest->>DB: Fetch Users & Watchlists (Cron Job)
+        DB-->>Inngest: User Data
+        Inngest->>AI: Generate Personalized News Summary
+        AI-->>Inngest: Summary Text
+        Inngest->>Email: Send Daily Summary Email
+        Email-->>User: Receive Market Update
     end
 ```
+
+---
 
 ## 📂 Folder Structure
 
 - **`app/`**: Application routes and pages.
   - **`(auth)/`**: Authentication routes (Sign-in, Sign-up).
-  - **`(root)/`**: Main application routes (Dashboard, Stocks).
-  - **`api/`**: API route handlers.
-- **`components/`**: Reusable UI components (Widgets, Forms, UI primitives).
-- **`database/`**: Database connection and Mongoose models (`watchlist.model.ts`).
-- **`lib/`**: Utility functions and constants.
+  - **`(root)/`**: Main application routes (Dashboard, Watchlist, Stocks).
+  - **`api/`**: API route handlers (including Inngest webhooks).
+- **`components/`**: Reusable UI components.
+  - **`ui/`**: Base UI primitives (buttons, inputs, dialogs).
+- **`database/`**: Database connection and Mongoose models (`alert.model.ts`, `watchlist.model.ts`, etc.).
+- **`lib/`**: Business logic and utilities.
+  - **`actions/`**: Server Actions for data fetching and mutations.
+  - **`inngest/`**: Background job definitions and AI prompts.
 - **`types/`**: TypeScript type definitions.
+- **`public/`**: Static assets.
+
+---
 
 ## 🏁 Getting Started
 
@@ -67,6 +103,10 @@ sequenceDiagram
 
 - Node.js (v18 or higher recommended)
 - MongoDB instance (Local or Atlas)
+- Accounts/API Keys for:
+  - Google Gemini (AI)
+  - Finnhub (Market Data)
+  - SMTP Service (e.g., Gmail, Resend) for Nodemailer
 
 ### Installation
 
@@ -105,13 +145,25 @@ sequenceDiagram
     | `FINNHUB_API_KEY` | Finnhub API key (server-side). |
     | `GEMINI_API_KEY` | Google Gemini API key for AI features. |
 
-4.  **Run the development server:**
+4.  **Run the development server and Inngest:**
+    
+    Start the Next.js app:
     ```bash
     npm run dev
     ```
 
+    In a separate terminal, start the Inngest Dev Server (optional, for testing background jobs):
+    ```bash
+    npm run inngest
+    ```
+
 5.  **Open the app:**
     Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
+
+    To view Inngest dashboard:
+    Navigate to [http://localhost:8288](http://localhost:8288).
+
+---
 
 ## 🤝 Contributing
 
